@@ -359,12 +359,13 @@ public class AdminUsuariosController {
      * Procesa la edición de un usuario
      * POST /admin/usuarios/editar/{id}
      *
+     * NOTA: El rol NO se puede cambiar al editar. El rol se asigna solo al crear.
+     *
      * @param id ID del usuario a editar
      * @param nombre Nuevo nombre
      * @param email Nuevo email
      * @param passwordNueva Nueva contraseña (opcional, dejar vacío para no cambiar)
      * @param passwordConfirm Confirmación de nueva contraseña
-     * @param rol Nuevo rol
      * @param activo Nuevo estado
      * @param fechaNacimiento Nueva fecha de nacimiento (opcional)
      * @param redirectAttributes Atributos para mensajes flash
@@ -378,7 +379,6 @@ public class AdminUsuariosController {
             @RequestParam String email,
             @RequestParam(required = false) String passwordNueva,
             @RequestParam(required = false) String passwordConfirm,
-            @RequestParam Rol rol,
             @RequestParam(required = false, defaultValue = "false") Boolean activo,
             @RequestParam(required = false) String fechaNacimiento,
             RedirectAttributes redirectAttributes,
@@ -415,7 +415,7 @@ public class AdminUsuariosController {
                 return "redirect:/admin/usuarios/editar/" + id;
             }
 
-            // Validar que no se esté desactivando o degradando al último administrador
+            // Validar que no se esté desactivando al último administrador
             if (usuario.getRol() == Rol.ADMINISTRADOR) {
                 long totalAdminsActivos = usuarioService.listarTodos().stream()
                         .filter(u -> u.getRol() == Rol.ADMINISTRADOR && u.getActivo())
@@ -425,11 +425,6 @@ public class AdminUsuariosController {
                     if (!activo) {
                         redirectAttributes.addFlashAttribute("error",
                                 "No se puede desactivar al último administrador activo");
-                        return "redirect:/admin/usuarios/editar/" + id;
-                    }
-                    if (rol != Rol.ADMINISTRADOR) {
-                        redirectAttributes.addFlashAttribute("error",
-                                "No se puede cambiar el rol del último administrador activo");
                         return "redirect:/admin/usuarios/editar/" + id;
                     }
                 }
@@ -453,10 +448,10 @@ public class AdminUsuariosController {
                 usuario.setContrasena(passwordNueva); // Se encriptará en el service
             }
 
-            // Actualizar campos básicos
+            // Actualizar campos básicos (el ROL NO se puede cambiar)
             usuario.setNombre(nombre.trim());
             usuario.setEmail(email.trim().toLowerCase());
-            usuario.setRol(rol);
+            // usuario.setRol(rol); // DESHABILITADO: El rol no se puede cambiar después de la creación
             usuario.setActivo(activo);
 
             // Actualizar fecha de nacimiento si se proporcionó
@@ -863,18 +858,21 @@ public class AdminUsuariosController {
     }
 
     // ============================================================
-    // CAMBIAR ROL DE USUARIO
+    // CAMBIAR ROL DE USUARIO (DESHABILITADO)
     // ============================================================
 
     /**
-     * Cambia el rol de un usuario
+     * DESHABILITADO: El cambio de rol ya no está permitido.
      * POST /admin/usuarios/cambiar-rol/{id}
+     *
+     * Esta funcionalidad ha sido deshabilitada por políticas de seguridad.
+     * El rol de un usuario solo se puede asignar al momento de la creación.
      *
      * @param id ID del usuario
      * @param nuevoRol Nuevo rol a asignar
      * @param redirectAttributes Atributos para mensajes flash
      * @param session Sesión HTTP
-     * @return Redirección al listado de usuarios
+     * @return Redirección al listado de usuarios con mensaje de error
      */
     @PostMapping("/cambiar-rol/{id}")
     public String cambiarRol(
@@ -883,51 +881,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos de modificación (solo ADMIN)
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
-            return "redirect:/acceso-denegado";
-        }
-
-        try {
-            Usuario usuario = usuarioService.buscarPorId(id);
-            if (usuario == null) {
-                redirectAttributes.addFlashAttribute("error", "Usuario no encontrado");
-                return "redirect:/admin/usuarios";
-            }
-
-            // Validar que no se esté degradando al último administrador
-            if (usuario.getRol() == Rol.ADMINISTRADOR && nuevoRol != Rol.ADMINISTRADOR) {
-                long totalAdminsActivos = usuarioService.listarTodos().stream()
-                        .filter(u -> u.getRol() == Rol.ADMINISTRADOR && u.getActivo())
-                        .count();
-
-                if (totalAdminsActivos <= 1) {
-                    redirectAttributes.addFlashAttribute("error",
-                            "No se puede cambiar el rol del último administrador activo");
-                    return "redirect:/admin/usuarios";
-                }
-            }
-
-            usuarioService.cambiarRol(id, nuevoRol);
-
-            // cambiarRol en el service ya invalida sesiones, pero dejamos este llamado por compatibilidad
-            try {
-                SessionRegistry reg = SessionRegistry.getInstance();
-                if (reg != null) reg.invalidateSessionsForUser(id);
-            } catch (Exception e) {
-                System.err.println("Error invalidando sesiones tras cambiar rol usuario " + id + ": " + e.getMessage());
-            }
-
-            redirectAttributes.addFlashAttribute("mensaje",
-                    "Rol de '" + usuario.getNombre() + "' cambiado a " + nuevoRol + " exitosamente");
-            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error",
-                    "Error al cambiar rol: " + e.getMessage());
-        }
-
+        // FUNCIONALIDAD DESHABILITADA
+        redirectAttributes.addFlashAttribute("error",
+                "El cambio de rol está deshabilitado. El rol solo se puede asignar al crear el usuario.");
         return "redirect:/admin/usuarios";
     }
 

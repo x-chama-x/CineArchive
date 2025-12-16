@@ -167,82 +167,119 @@
                         </div>
                     </div>
 
-                    <!-- Sección 3: Rol del Sistema -->
-                    <div style="margin-bottom: 40px;">
-                        <h2>🎭 Rol del Sistema</h2>
+                    <!-- Sección 3: Rol del Sistema (SOLO visible al CREAR, no al editar) -->
+                    <c:choose>
+                        <c:when test="${empty usuario.id}">
+                            <!-- CREAR: Mostrar selección de rol -->
+                            <div style="margin-bottom: 40px;">
+                                <h2>🎭 Rol del Sistema</h2>
 
-                        <div style="margin-top: 15px;">
-                            <p style="margin-bottom: 15px; color: #888;">Selecciona el rol que tendrá este usuario:</p>
+                                <div style="margin-top: 15px;">
+                                    <p style="margin-bottom: 15px; color: #888;">Selecciona el rol que tendrá este usuario:</p>
 
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                                <!-- Usuario Regular -->
-                                <label style="cursor: pointer;">
-                                    <input type="radio"
-                                           name="rol"
-                                           value="USUARIO_REGULAR"
-                                           ${empty usuario.id || usuario.rol == 'USUARIO_REGULAR' ? 'checked' : ''}
-                                           required>
-                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
-                                        <div style="font-size: 30px; margin-bottom: 10px;">👤</div>
-                                        <strong>Usuario Regular</strong>
-                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Acceso básico al catálogo</p>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                        <!-- Usuario Regular -->
+                                        <label style="cursor: pointer;">
+                                            <input type="radio"
+                                                   name="rol"
+                                                   value="USUARIO_REGULAR"
+                                                   ${empty usuario.id || usuario.rol == 'USUARIO_REGULAR' ? 'checked' : ''}
+                                                   required>
+                                            <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                                <div style="font-size: 30px; margin-bottom: 10px;">👤</div>
+                                                <strong>Usuario Regular</strong>
+                                                <p style="font-size: 12px; color: #888; margin-top: 5px;">Acceso básico al catálogo</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Gestor -->
+                                        <label style="cursor: pointer;">
+                                            <input type="radio"
+                                                   name="rol"
+                                                   value="GESTOR_INVENTARIO"
+                                                   ${usuario.rol == 'GESTOR_INVENTARIO' ? 'checked' : ''}>
+                                            <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                                <div style="font-size: 30px; margin-bottom: 10px;">📦</div>
+                                                <strong>Gestor Inventario</strong>
+                                                <p style="font-size: 12px; color: #888; margin-top: 5px;">Gestión de contenido</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Analista -->
+                                        <label style="cursor: pointer;">
+                                            <input type="radio"
+                                                   name="rol"
+                                                   value="ANALISTA_DATOS"
+                                                   ${usuario.rol == 'ANALISTA_DATOS' ? 'checked' : ''}>
+                                            <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                                <div style="font-size: 30px; margin-bottom: 10px;">📊</div>
+                                                <strong>Analista Datos</strong>
+                                                <p style="font-size: 12px; color: #888; margin-top: 5px;">Reportes y estadísticas</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Administrador -->
+                                        <label style="cursor: pointer;">
+                                            <input type="radio"
+                                                   name="rol"
+                                                   value="ADMINISTRADOR"
+                                                   ${usuario.rol == 'ADMINISTRADOR' ? 'checked' : ''}>
+                                            <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                                <div style="font-size: 30px; margin-bottom: 10px;">🛡️</div>
+                                                <strong>Administrador</strong>
+                                                <p style="font-size: 12px; color: #888; margin-top: 5px;">Control total del sistema</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Chusma -->
+                                        <label style="cursor: pointer;">
+                                            <input type="radio"
+                                                   name="rol"
+                                                   value="CHUSMA"
+                                                   ${usuario.rol == 'CHUSMA' ? 'checked' : ''}>
+                                            <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                                <div style="font-size: 30px; margin-bottom: 10px;">👀</div>
+                                                <strong>Chusma</strong>
+                                                <p style="font-size: 12px; color: #888; margin-top: 5px;">Solo ver usuarios (lectura)</p>
+                                            </div>
+                                        </label>
                                     </div>
-                                </label>
-
-                                <!-- Gestor -->
-                                <label style="cursor: pointer;">
-                                    <input type="radio"
-                                           name="rol"
-                                           value="GESTOR_INVENTARIO"
-                                           ${usuario.rol == 'GESTOR_INVENTARIO' ? 'checked' : ''}>
-                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
-                                        <div style="font-size: 30px; margin-bottom: 10px;">📦</div>
-                                        <strong>Gestor Inventario</strong>
-                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Gestión de contenido</p>
-                                    </div>
-                                </label>
-
-                                <!-- Analista -->
-                                <label style="cursor: pointer;">
-                                    <input type="radio"
-                                           name="rol"
-                                           value="ANALISTA_DATOS"
-                                           ${usuario.rol == 'ANALISTA_DATOS' ? 'checked' : ''}>
-                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
-                                        <div style="font-size: 30px; margin-bottom: 10px;">📊</div>
-                                        <strong>Analista Datos</strong>
-                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Reportes y estadísticas</p>
-                                    </div>
-                                </label>
-
-                                <!-- Administrador -->
-                                <label style="cursor: pointer;">
-                                    <input type="radio"
-                                           name="rol"
-                                           value="ADMINISTRADOR"
-                                           ${usuario.rol == 'ADMINISTRADOR' ? 'checked' : ''}>
-                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
-                                        <div style="font-size: 30px; margin-bottom: 10px;">🛡️</div>
-                                        <strong>Administrador</strong>
-                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Control total del sistema</p>
-                                    </div>
-                                </label>
-
-                                <!-- Chusma -->
-                                <label style="cursor: pointer;">
-                                    <input type="radio"
-                                           name="rol"
-                                           value="CHUSMA"
-                                           ${usuario.rol == 'CHUSMA' ? 'checked' : ''}>
-                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
-                                        <div style="font-size: 30px; margin-bottom: 10px;">👀</div>
-                                        <strong>Chusma</strong>
-                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Solo ver usuarios (lectura)</p>
-                                    </div>
-                                </label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- EDITAR: Mostrar rol actual (solo lectura, no se puede cambiar) -->
+                            <div style="margin-bottom: 40px;">
+                                <h2>🎭 Rol del Sistema</h2>
+                                <div style="margin-top: 15px; padding: 20px; background-color: var(--surface-color); border-radius: 8px;">
+                                    <p style="color: #888; margin-bottom: 10px;">El rol del usuario no puede ser modificado:</p>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 30px;">
+                                            <c:choose>
+                                                <c:when test="${usuario.rol == 'ADMINISTRADOR'}">🛡️</c:when>
+                                                <c:when test="${usuario.rol == 'GESTOR_INVENTARIO'}">📦</c:when>
+                                                <c:when test="${usuario.rol == 'ANALISTA_DATOS'}">📊</c:when>
+                                                <c:when test="${usuario.rol == 'CHUSMA'}">👀</c:when>
+                                                <c:otherwise>👤</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                        <strong style="font-size: 18px;">
+                                            <c:choose>
+                                                <c:when test="${usuario.rol == 'ADMINISTRADOR'}">Administrador</c:when>
+                                                <c:when test="${usuario.rol == 'GESTOR_INVENTARIO'}">Gestor de Inventario</c:when>
+                                                <c:when test="${usuario.rol == 'ANALISTA_DATOS'}">Analista de Datos</c:when>
+                                                <c:when test="${usuario.rol == 'CHUSMA'}">Chusma</c:when>
+                                                <c:otherwise>Usuario Regular</c:otherwise>
+                                            </c:choose>
+                                        </strong>
+                                    </div>
+                                    <p style="color: #dc3545; font-size: 12px; margin-top: 10px;">
+                                        ⚠️ El cambio de rol está deshabilitado por políticas de seguridad.
+                                    </p>
+                                </div>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
 
                     <!-- Sección 4: Estado -->
                     <div style="margin-bottom: 40px;">
