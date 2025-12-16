@@ -32,17 +32,24 @@
         <div class="stat-item"><span class="stat-number">${peliculasCount}</span><span class="stat-label">Películas</span></div>
         <div class="stat-item"><span class="stat-number">${seriesCount}</span><span class="stat-label">Series</span></div>
     </div>
-    <!-- Filtros visuales (sin funcionalidad backend aún) -->
+    <!-- Filtros funcionales -->
     <div class="filter-bar">
-        <select class="filter-select"><option>Todas</option><option>Solo Películas</option><option>Solo Series</option></select>
-        <select class="filter-select"><option>Fecha Agregada</option><option>Prioridad</option><option>Título A-Z</option><option>Mejor Valoradas</option></select>
+        <select id="filtroTipo" class="filter-select">
+            <option value="todas">Todas</option>
+            <option value="pelicula">Solo Películas</option>
+            <option value="serie">Solo Series</option>
+        </select>
+        <select id="filtroOrden" class="filter-select">
+            <option value="fecha">Fecha Agregada</option>
+            <option value="titulo">Título A-Z</option>
+        </select>
     </div>
     <!-- Lista principal existente -->
     <div class="movie-row no-select">
         <c:choose>
             <c:when test="${not empty contenidos}">
-                <c:forEach var="c" items="${contenidos}">
-                    <div class="movie-card">
+                <c:forEach var="c" items="${contenidos}" varStatus="loop">
+                    <div class="movie-card" data-tipo="${fn:toLowerCase(c.tipo.name())}" data-titulo="${c.titulo}" data-orden="${loop.index}">
                         <c:choose>
                             <c:when test="${empty c.imagenUrl}"><c:url var="imgSrc" value="/img/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_FMjpg_UX1000_.jpg"/></c:when>
                             <c:when test="${fn:startsWith(c.imagenUrl,'http')}"><c:set var="imgSrc" value="${c.imagenUrl}"/></c:when>

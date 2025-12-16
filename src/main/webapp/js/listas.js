@@ -116,4 +116,65 @@ function initListaButtonsEstado() {
     }).catch(()=>{});
 }
 
-if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', initListaButtonsEstado); else initListaButtonsEstado();
+// ============ Filtrado y Ordenamiento para Para Ver ============
+function initFiltrosParaVer() {
+  const filtroTipo = document.getElementById('filtroTipo');
+  const filtroOrden = document.getElementById('filtroOrden');
+  const container = document.querySelector('.movie-row.no-select');
+
+  if (!filtroTipo || !filtroOrden || !container) return;
+
+  function aplicarFiltros() {
+    const tipoSeleccionado = filtroTipo.value;
+    const ordenSeleccionado = filtroOrden.value;
+
+    const cards = Array.from(container.querySelectorAll('.movie-card[data-tipo]'));
+
+    // Filtrar por tipo
+    cards.forEach(card => {
+      const tipo = card.getAttribute('data-tipo');
+      if (tipoSeleccionado === 'todas') {
+        card.style.display = '';
+      } else if (tipoSeleccionado === 'pelicula' && tipo === 'pelicula') {
+        card.style.display = '';
+      } else if (tipoSeleccionado === 'serie' && tipo === 'serie') {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Ordenar
+    const visibleCards = cards.filter(c => c.style.display !== 'none');
+
+    if (ordenSeleccionado === 'titulo') {
+      visibleCards.sort((a, b) => {
+        const tituloA = (a.getAttribute('data-titulo') || '').toLowerCase();
+        const tituloB = (b.getAttribute('data-titulo') || '').toLowerCase();
+        return tituloA.localeCompare(tituloB, 'es');
+      });
+    } else {
+      // Fecha agregada = orden original
+      visibleCards.sort((a, b) => {
+        const ordenA = parseInt(a.getAttribute('data-orden') || '0');
+        const ordenB = parseInt(b.getAttribute('data-orden') || '0');
+        return ordenA - ordenB;
+      });
+    }
+
+    // Reordenar en el DOM
+    visibleCards.forEach(card => container.appendChild(card));
+    // Mover los ocultos al final
+    cards.filter(c => c.style.display === 'none').forEach(card => container.appendChild(card));
+  }
+
+  filtroTipo.addEventListener('change', aplicarFiltros);
+  filtroOrden.addEventListener('change', aplicarFiltros);
+}
+
+function initParaVer() {
+  initListaButtonsEstado();
+  initFiltrosParaVer();
+}
+
+if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', initParaVer); else initParaVer();
