@@ -2,6 +2,7 @@ package edu.utn.inspt.cinearchive.frontend.controlador;
 
 import edu.utn.inspt.cinearchive.backend.modelo.Usuario;
 import edu.utn.inspt.cinearchive.backend.modelo.Usuario.Rol;
+import edu.utn.inspt.cinearchive.backend.servicio.AutorizacionService;
 import edu.utn.inspt.cinearchive.backend.servicio.UsuarioService;
 import edu.utn.inspt.cinearchive.security.SessionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AdminUsuariosController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private AutorizacionService autorizacionService;
+
     // No inyectamos SessionRegistry para evitar problemas en contextos no gestionados; usamos la instancia estática.
 
     // ============================================================
@@ -63,11 +67,16 @@ public class AdminUsuariosController {
             Model model,
             HttpSession session) {
 
-        // Verificar que el usuario logueado es administrador
+        // Verificar que el usuario logueado puede ver usuarios (ADMIN o CHUSMA)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+
+        if (!autorizacionService.puedeVerUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
+
+        // Determinar si puede modificar usuarios (solo ADMIN)
+        boolean puedeModificar = autorizacionService.puedeModificarUsuarios(usuarioLogueado);
+        model.addAttribute("puedeModificar", puedeModificar);
 
         // Obtener todos los usuarios
         List<Usuario> usuarios = usuarioService.listarTodos();
@@ -155,9 +164,9 @@ public class AdminUsuariosController {
      */
     @GetMapping("/crear")
     public String mostrarFormularioCrear(Model model, HttpSession session) {
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -202,9 +211,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -315,9 +324,9 @@ public class AdminUsuariosController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -375,9 +384,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -515,9 +524,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -591,9 +600,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -646,9 +655,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -729,9 +738,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -812,11 +821,14 @@ public class AdminUsuariosController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        // Verificar permisos
+        // Verificar permisos de lectura (ADMIN o CHUSMA pueden ver)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeVerUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
+
+        // Determinar si puede modificar (para mostrar/ocultar botones)
+        boolean puedeModificar = autorizacionService.puedeModificarUsuarios(usuarioLogueado);
 
         try {
             // Buscar usuario
@@ -829,6 +841,7 @@ public class AdminUsuariosController {
 
             // Agregar datos al modelo
             model.addAttribute("usuario", usuario);
+            model.addAttribute("puedeModificar", puedeModificar);
 
             // Información adicional
             model.addAttribute("esUltimoAdmin",
@@ -870,9 +883,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 
@@ -941,9 +954,9 @@ public class AdminUsuariosController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        // Verificar permisos
+        // Verificar permisos de modificación (solo ADMIN)
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuarioLogueado == null || usuarioLogueado.getRol() != Rol.ADMINISTRADOR) {
+        if (!autorizacionService.puedeModificarUsuarios(usuarioLogueado)) {
             return "redirect:/acceso-denegado";
         }
 

@@ -377,7 +377,7 @@ CREATE TABLE `usuario` (
   `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `contrasena` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `rol` enum('USUARIO_REGULAR','ADMINISTRADOR','GESTOR_INVENTARIO','ANALISTA_DATOS') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USUARIO_REGULAR',
+  `rol` enum('USUARIO_REGULAR','ADMINISTRADOR','GESTOR_INVENTARIO','ANALISTA_DATOS','CHUSMA') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USUARIO_REGULAR',
   `fecha_registro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `activo` tinyint(1) DEFAULT '1',
   `fecha_nacimiento` date DEFAULT NULL,

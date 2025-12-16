@@ -1,6 +1,8 @@
 package edu.utn.inspt.cinearchive.backend.config;
 
 import edu.utn.inspt.cinearchive.backend.modelo.Usuario;
+import edu.utn.inspt.cinearchive.backend.servicio.AutorizacionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -20,6 +22,9 @@ import javax.servlet.http.HttpSession;
  */
 @Component
 public class SecurityInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private AutorizacionService autorizacionService;
 
     /**
      * Se ejecuta ANTES de que el request llegue al Controller
@@ -65,11 +70,31 @@ public class SecurityInterceptor implements HandlerInterceptor {
             return false; // Bloquear acceso
         }
 
+        // ===== RESTRICCIÓN ESPECIAL PARA ROL CHUSMA =====
+        // CHUSMA solo puede acceder a /admin/usuarios (listado y detalle)
+        // No puede acceder a ninguna otra funcionalidad del sistema
+        if (usuario.getRol() == Usuario.Rol.CHUSMA) {
+            // Rutas permitidas para CHUSMA
+            boolean rutaPermitida = path.equals("/admin/usuarios") ||
+                                    path.startsWith("/admin/usuarios/detalle/") ||
+                                    path.equals("/logout") ||
+                                    path.equals("/perfil") ||
+                                    path.equals("/acceso-denegado");
+
+            if (!rutaPermitida) {
+                response.sendRedirect(contextPath + "/acceso-denegado");
+                return false;
+            }
+            // Si es ruta permitida, continuar
+            return true;
+        }
+
         // ===== VERIFICAR PERMISOS POR ROL =====
 
-        // Rutas de ADMINISTRADOR
+        // Rutas de ADMINISTRADOR (también accesibles para CHUSMA en modo lectura)
         if (path.startsWith("/admin")) {
-            if (usuario.getRol() != Usuario.Rol.ADMINISTRADOR) {
+            // Usar AutorizacionService para verificar si puede ver usuarios
+            if (!autorizacionService.puedeVerUsuarios(usuario)) {
                 response.sendRedirect(contextPath + "/acceso-denegado");
                 return false;
             }

@@ -227,6 +227,19 @@
                                         <p style="font-size: 12px; color: #888; margin-top: 5px;">Control total del sistema</p>
                                     </div>
                                 </label>
+
+                                <!-- Chusma -->
+                                <label style="cursor: pointer;">
+                                    <input type="radio"
+                                           name="rol"
+                                           value="CHUSMA"
+                                           ${usuario.rol == 'CHUSMA' ? 'checked' : ''}>
+                                    <div style="padding: 20px; background-color: var(--surface-color); border: 2px solid var(--secondary-color); border-radius: 8px; text-align: center; transition: all 0.3s;">
+                                        <div style="font-size: 30px; margin-bottom: 10px;">👀</div>
+                                        <strong>Chusma</strong>
+                                        <p style="font-size: 12px; color: #888; margin-top: 5px;">Solo ver usuarios (lectura)</p>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>

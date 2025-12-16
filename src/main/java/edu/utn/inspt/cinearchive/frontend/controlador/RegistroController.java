@@ -1,6 +1,7 @@
 package edu.utn.inspt.cinearchive.frontend.controlador;
 
 import edu.utn.inspt.cinearchive.backend.modelo.Usuario;
+import edu.utn.inspt.cinearchive.backend.servicio.AutorizacionService;
 import edu.utn.inspt.cinearchive.backend.servicio.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,9 @@ public class RegistroController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private AutorizacionService autorizacionService;
+
     /**
      * Muestra el formulario de registro
      * GET /registro
@@ -36,20 +40,8 @@ public class RegistroController {
         // Si ya hay un usuario logueado, redirigir a su página principal según su rol
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuarioLogueado != null) {
-            // Redirigir según el rol del usuario
-            switch (usuarioLogueado.getRol()) {
-                case ADMINISTRADOR:
-                    return "redirect:/admin/usuarios";
-
-                case GESTOR_INVENTARIO:
-                    return "redirect:/inventario/panel";
-
-                case ANALISTA_DATOS:
-                    return "redirect:/reportes/panel";
-
-                default: // USUARIO_REGULAR
-                    return "redirect:/catalogo";
-            }
+            // Redirigir según el rol del usuario (usando AutorizacionService - SOLID)
+            return autorizacionService.obtenerRedireccionPorRol(usuarioLogueado);
         }
 
         // Crear un objeto Usuario vacío para el formulario

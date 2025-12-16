@@ -665,6 +665,7 @@ h2 {
 .badge-admin { background-color: #dc3545; }
 .badge-gestor { background-color: #fd7e14; }
 .badge-analista { background-color: #20c997; }
+.badge-chusma { background-color: #9b59b6; }
 .badge-estado { display:inline-block; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold; letter-spacing:.5px; }
 .estado-activo { background:rgba(40,167,69,.15); color:var(--success-color); border:1px solid var(--success-color); }
 .estado-finalizado { background:rgba(108,117,125,.15); color:#adb5bd; border:1px solid #6c757d; }

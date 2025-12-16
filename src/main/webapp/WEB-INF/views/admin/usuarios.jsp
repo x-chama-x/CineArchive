@@ -79,7 +79,9 @@
             <section class="admin-section">
                 <div class="section-header">
                     <h2>👥 Gestión de Usuarios</h2>
-                    <button class="btn-primary" onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/crear'">➕ Crear Usuario</button>
+                    <c:if test="${puedeModificar}">
+                        <button class="btn-primary" onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/crear'">➕ Crear Usuario</button>
+                    </c:if>
                 </div>
 
                 <form method="get" action="${pageContext.request.contextPath}/admin/usuarios" id="filtrosForm">
@@ -97,6 +99,7 @@
                             <option value="ADMINISTRADOR" ${rolFiltro == 'ADMINISTRADOR' ? 'selected' : ''}>Administrador</option>
                             <option value="GESTOR_INVENTARIO" ${rolFiltro == 'GESTOR_INVENTARIO' ? 'selected' : ''}>Gestor de Inventario</option>
                             <option value="ANALISTA_DATOS" ${rolFiltro == 'ANALISTA_DATOS' ? 'selected' : ''}>Analista de Datos</option>
+                            <option value="CHUSMA" ${rolFiltro == 'CHUSMA' ? 'selected' : ''}>Chusma</option>
                         </select>
 
                         <select id="activo" name="activo" class="filter-select">
@@ -141,6 +144,9 @@
                                                     <c:when test="${usuario.rol == 'ANALISTA_DATOS'}">
                                                         <span class="badge badge-analista">Analista Datos</span>
                                                     </c:when>
+                                                    <c:when test="${usuario.rol == 'CHUSMA'}">
+                                                        <span class="badge badge-chusma">Chusma</span>
+                                                    </c:when>
                                                     <c:otherwise>
                                                         <span class="badge badge-user">Usuario Regular</span>
                                                     </c:otherwise>
@@ -158,52 +164,58 @@
                                             </td>
                                             <td>${usuario.fechaRegistro}</td>
                                             <td>
-                                                <button class="btn-icon"
-                                                        onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/editar/${usuario.id}'"
-                                                        title="Editar">✏️</button>
+                                                <c:if test="${puedeModificar}">
+                                                    <button class="btn-icon"
+                                                            onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/editar/${usuario.id}'"
+                                                            title="Editar">✏️</button>
+                                                </c:if>
                                                 <button class="btn-icon"
                                                         onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/detalle/${usuario.id}'"
                                                         title="Ver detalles">👁️</button>
-                                                <!-- Botón Activar/Desactivar -->
-                                                <c:choose>
-                                                    <c:when test="${usuario.id == usuarioLogueado.id}">
-                                                        <!-- Usuario logueado: no puede desactivarse a sí mismo -->
-                                                        <button class="btn-icon"
-                                                                onclick="alert('🚫 No puedes desactivar tu propia cuenta')"
-                                                                title="No puedes desactivarte a ti mismo"
-                                                                style="opacity: 0.5; cursor: not-allowed;">🚫</button>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <c:choose>
-                                                            <c:when test="${usuario.activo}">
-                                                                <button class="btn-icon"
-                                                                        onclick="confirmarDesactivar(${usuario.id})"
-                                                                        title="Desactivar">🚫</button>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <button class="btn-icon"
-                                                                        onclick="confirmarActivar(${usuario.id})"
-                                                                        title="Activar">✅</button>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <!-- Botón Activar/Desactivar (solo si puedeModificar) -->
+                                                <c:if test="${puedeModificar}">
+                                                    <c:choose>
+                                                        <c:when test="${usuario.id == usuarioLogueado.id}">
+                                                            <!-- Usuario logueado: no puede desactivarse a sí mismo -->
+                                                            <button class="btn-icon"
+                                                                    onclick="alert('🚫 No puedes desactivar tu propia cuenta')"
+                                                                    title="No puedes desactivarte a ti mismo"
+                                                                    style="opacity: 0.5; cursor: not-allowed;">🚫</button>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:choose>
+                                                                <c:when test="${usuario.activo}">
+                                                                    <button class="btn-icon"
+                                                                            onclick="confirmarDesactivar(${usuario.id})"
+                                                                            title="Desactivar">🚫</button>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <button class="btn-icon"
+                                                                            onclick="confirmarActivar(${usuario.id})"
+                                                                            title="Activar">✅</button>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
 
-                                                <!-- Botón Eliminar -->
-                                                <c:choose>
-                                                    <c:when test="${usuario.id == usuarioLogueado.id}">
-                                                        <!-- Usuario logueado: no puede eliminarse a sí mismo -->
-                                                        <button class="btn-icon"
-                                                                onclick="alert('🚫 NO PUEDES ELIMINAR TU PROPIA CUENTA\n\nPide a otro administrador que lo haga si realmente es necesario.')"
-                                                                title="No puedes eliminarte a ti mismo"
-                                                                style="opacity: 0.5; cursor: not-allowed;">🗑️</button>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <button class="btn-icon"
-                                                                onclick="confirmarEliminar(${usuario.id}, '${usuario.nombre}')"
-                                                                title="Eliminar">🗑️</button>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <!-- Botón Eliminar (solo si puedeModificar) -->
+                                                <c:if test="${puedeModificar}">
+                                                    <c:choose>
+                                                        <c:when test="${usuario.id == usuarioLogueado.id}">
+                                                            <!-- Usuario logueado: no puede eliminarse a sí mismo -->
+                                                            <button class="btn-icon"
+                                                                    onclick="alert('🚫 NO PUEDES ELIMINAR TU PROPIA CUENTA\n\nPide a otro administrador que lo haga si realmente es necesario.')"
+                                                                    title="No puedes eliminarte a ti mismo"
+                                                                    style="opacity: 0.5; cursor: not-allowed;">🗑️</button>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <button class="btn-icon"
+                                                                    onclick="confirmarEliminar(${usuario.id}, '${usuario.nombre}')"
+                                                                    title="Eliminar">🗑️</button>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>

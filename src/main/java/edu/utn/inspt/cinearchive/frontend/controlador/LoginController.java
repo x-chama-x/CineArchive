@@ -1,6 +1,7 @@
 package edu.utn.inspt.cinearchive.frontend.controlador;
 
 import edu.utn.inspt.cinearchive.backend.modelo.Usuario;
+import edu.utn.inspt.cinearchive.backend.servicio.AutorizacionService;
 import edu.utn.inspt.cinearchive.backend.servicio.UsuarioService;
 import edu.utn.inspt.cinearchive.security.SessionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class LoginController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private AutorizacionService autorizacionService;
 
     /**
      * Muestra el formulario de login
@@ -132,20 +136,8 @@ public class LoginController {
             // 5. Establecer tiempo de sesión (30 minutos)
             session.setMaxInactiveInterval(30 * 60);
 
-            // 6. Redirigir según el rol del usuario
-            switch (usuario.getRol()) {
-                case ADMINISTRADOR:
-                    return "redirect:/admin/usuarios";
-
-                case GESTOR_INVENTARIO:
-                    return "redirect:/inventario/panel";
-
-                case ANALISTA_DATOS:
-                    return "redirect:/reportes/panel";
-
-                default: // USUARIO_REGULAR
-                    return "redirect:/catalogo";
-            }
+            // 6. Redirigir según el rol del usuario (usando AutorizacionService - SOLID)
+            return autorizacionService.obtenerRedireccionPorRol(usuario);
 
         } catch (Exception e) {
             // Manejar cualquier error inesperado
@@ -224,20 +216,8 @@ public class LoginController {
         // Agregar datos del usuario al modelo
         model.addAttribute("usuario", usuario);
 
-        // Redirigir según el rol
-        switch (usuario.getRol()) {
-            case ADMINISTRADOR:
-                return "redirect:/admin/panel";
-
-            case GESTOR_INVENTARIO:
-                return "redirect:/inventario/panel";
-
-            case ANALISTA_DATOS:
-                return "redirect:/reportes/panel";
-
-            default: // USUARIO_REGULAR
-                return "redirect:/catalogo"; // Redirigir al catálogo para usuarios regulares
-        }
+        // Redirigir según el rol (usando AutorizacionService - SOLID)
+        return autorizacionService.obtenerRedireccionPorRol(usuario);
     }
 
     /**

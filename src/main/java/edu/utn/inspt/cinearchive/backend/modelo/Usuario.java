@@ -10,7 +10,8 @@ public class Usuario {
         USUARIO_REGULAR,
         ADMINISTRADOR,
         GESTOR_INVENTARIO,
-        ANALISTA_DATOS
+        ANALISTA_DATOS,
+        CHUSMA
     }
 
     private Long id;

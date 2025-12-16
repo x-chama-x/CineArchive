@@ -42,6 +42,9 @@
                             <c:when test="${usuario.rol == 'ANALISTA_DATOS'}">
                                 <span class="badge badge-analista">Analista Datos</span>
                             </c:when>
+                            <c:when test="${usuario.rol == 'CHUSMA'}">
+                                <span class="badge badge-chusma">Chusma</span>
+                            </c:when>
                             <c:otherwise>
                                 <span class="badge badge-user">Usuario Regular</span>
                             </c:otherwise>
@@ -71,22 +74,24 @@
 
                     <!-- Botones de Acción -->
                     <div class="action-buttons">
-                        <button class="btn-primary" onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/editar/${usuario.id}'">
-                            ✏️ Editar Usuario
-                        </button>
+                        <c:if test="${puedeModificar}">
+                            <button class="btn-primary" onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios/editar/${usuario.id}'">
+                                ✏️ Editar Usuario
+                            </button>
 
-                        <c:choose>
-                            <c:when test="${usuario.activo}">
-                                <button class="btn-secondary" onclick="confirmarDesactivar(${usuario.id})">
-                                    🚫 Desactivar
-                                </button>
-                            </c:when>
-                            <c:otherwise>
-                                <button class="btn-primary" onclick="confirmarActivar(${usuario.id})" style="background-color: #28a745;">
-                                    ✅ Activar
-                                </button>
-                            </c:otherwise>
-                        </c:choose>
+                            <c:choose>
+                                <c:when test="${usuario.activo}">
+                                    <button class="btn-secondary" onclick="confirmarDesactivar(${usuario.id})">
+                                        🚫 Desactivar
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <button class="btn-primary" onclick="confirmarActivar(${usuario.id})" style="background-color: #28a745;">
+                                        ✅ Activar
+                                    </button>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
 
                         <button class="btn-secondary" onclick="window.location.href='${pageContext.request.contextPath}/admin/usuarios'">
                             ← Volver al Listado
